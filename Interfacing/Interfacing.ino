@@ -8,13 +8,13 @@ LiquidCrystal_I2C lcd(0x27, 20, 4);
 float temp, hum;
 DHT dht(DHTPIN, DHTTYPE);
 
-#define MPU_addr 0x68
+#define MPU_addr 0b01101000
 int16_t AcX, AcY, AcZ, Tmp, GyX, GyY, GyZ;
 void setup() {
   // put your setup code here, to run once:
   Wire.begin();
   Wire.beginTransmission(MPU_addr);
-  Wire.write(0x6B);
+  Wire.write(0x01101011);
   Wire.write(0);
   Wire.endTransmission(true);
   Serial.begin(9600);
