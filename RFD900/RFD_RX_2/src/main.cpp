@@ -11,21 +11,35 @@ union U_float
 };
 
 const int SYNC = 0xFF;
-const int DATA_SIZE = 11; //Packet structure size;
+const int DATA_SIZE = 20; //Packet structure size;
 const int SIZE_FLOAT = sizeof(float); //4
 
 //Packet structure
 const int SYNC_BIT   = 0;
 const int SIZE       = 1;
-const int X          = 2;
-const int Y          = 3;
-const int Z          = 4;
-const int ALT0       = 5;
-const int ALT1       = 6;
-const int ALT2       = 7;
-const int ALT3       = 8;
-const int SUM1       = 9;
-const int SUM2       = 10;
+
+const int ALT0       = 2;
+const int ALT1       = 3;
+const int ALT2       = 4;
+const int ALT3       = 5;
+
+const int PITCH0     = 6;
+const int PITCH1     = 7;
+const int PITCH2     = 8;
+const int PITCH3     = 9;
+
+const int ROLL0     	= 10;
+const int ROLL1     	= 11;
+const int ROLL2     	= 12;
+const int ROLL3    	= 13;
+
+const int YAW0     	= 14;
+const int YAW1     	= 15;
+const int YAW2     	= 16;
+const int YAW3     	= 17;
+
+const int SUM1       = 18;
+const int SUM2       = 19;
 
 CRC16 crc(0x8005, 0xFFFF, 0x0, true, true); //init crc Algo = MODBUS
 
@@ -57,7 +71,6 @@ void loop()
 		for (uint8_t i = 2; i < data[SIZE]; i++)
 		{
 			data[i] = Serial2.read();
-			delay(1);
 		}
 	}
 
