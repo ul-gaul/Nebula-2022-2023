@@ -55,19 +55,16 @@ void loop()
 {
    uint8_t data[DATA_SIZE];
 
-   U_float test;
+   U_float alt;
 
-   test.v = 1247.4785;
+   alt.v = 1247.4785;
 
    uint8_t conv[SIZE_FLOAT];
 
    data[SYNC_BIT] = SYNC;
    data[SIZE] = sizeof(data);
-   data[X] = 0x01;
-   data[Y] = 0x55;
-   data[Z] = 0x88;
 
-   FloatToArray(test, &conv[0]);       //Put the float value in the conv array
+   FloatToArray(alt, &conv[0]);       //Put the float value in the conv array
    UpdateArray(conv, &data[ALT0]);     //Put the value of conv in the packet at the address designed
 
    CrcCalc(data);
