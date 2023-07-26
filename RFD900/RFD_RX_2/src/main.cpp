@@ -1,23 +1,35 @@
 #define BUFFER_SIZE 30
-#define DATA_SIZE 7
-#define SYNC 0xFF
 #define CLEAR_SERIAL Serial.println("\033[0H\033[0J");
 
 #include <Arduino.h>
 #include "CRC.h"
 
+union U_float
+{
+  float v;
+  uint8_t b[4];
+};
+
+const int SYNC = 0xFF;
+const int DATA_SIZE = 11; //Packet structure size;
+const int SIZE_FLOAT = sizeof(float); //4
+
+//Packet structure
+const int SYNC_BIT   = 0;
+const int SIZE       = 1;
+const int X          = 2;
+const int Y          = 3;
+const int Z          = 4;
+const int ALT0       = 5;
+const int ALT1       = 6;
+const int ALT2       = 7;
+const int ALT3       = 8;
+const int SUM1       = 9;
+const int SUM2       = 10;
+
 CRC16 crc(0x8005, 0xFFFF, 0x0, true, true); //init crc Algo = MODBUS
 
-const int SYNC_BIT = 0;
-const int SIZE = 1;
-
-const int X = 2;
-const int Y = 3;
-const int Z = 4;
-
-const int SUM1 = 5;
-const int SUM2 = 6;
-
+//Prototype
 uint16_t		CrcCalc(uint8_t data[], bool update = false);
 bool			CrcCheck(uint8_t data[]);
 bool			SendPacket(uint8_t data[]);
@@ -38,13 +50,14 @@ void loop()
 	data[SYNC_BIT] = SYNC;
 	data[SIZE] = sizeof(data);
 
-	if(Serial2.available())
+	if(Serial2.available()>data[SIZE])
 	{
 		while(Serial2.read() != SYNC){}
 		Serial2.read();
 		for (uint8_t i = 2; i < data[SIZE]; i++)
 		{
 			data[i] = Serial2.read();
+			delay(1);
 		}
 	}
 
