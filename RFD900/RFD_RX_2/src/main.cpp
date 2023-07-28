@@ -13,6 +13,7 @@ union U_float
 const int SYNC = 0xFF;
 const int DATA_SIZE = 20; //Packet structure size;
 const int SIZE_FLOAT = sizeof(float); //4
+const uint16_t period = 500; // 1/2 seconde
 
 //Packet structure
 const int SYNC_BIT   = 0;
@@ -43,6 +44,9 @@ const int SUM2       = 19;
 
 CRC16 crc(0x8005, 0xFFFF, 0x0, true, true); //init crc Algo = MODBUS
 
+uint16_t startMillis;
+uint16_t currentMillis;
+
 //Prototype
 uint16_t		CrcCalc(uint8_t data[], bool update = false);
 bool			CrcCheck(uint8_t data[]);
@@ -66,7 +70,13 @@ void loop()
 
 	if(Serial2.available()>data[SIZE])
 	{
-		while(Serial2.read() != SYNC){}
+		startMillis = millis();
+		
+		while(Serial2.read() != SYNC)
+		{
+			currentMillis = millis();
+			if(currentMillis - startMillis >= period){break;}
+		}
 		Serial2.read();
 		for (uint8_t i = 2; i < data[SIZE]; i++)
 		{
