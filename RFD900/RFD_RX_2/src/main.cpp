@@ -29,18 +29,18 @@ const int PITCH1     = 7;
 const int PITCH2     = 8;
 const int PITCH3     = 9;
 
-const int ROLL0     	= 10;
-const int ROLL1     	= 11;
-const int ROLL2     	= 12;
-const int ROLL3    	= 13;
+const int ROLL0      = 10;
+const int ROLL1      = 11;
+const int ROLL2      = 12;
+const int ROLL3      = 13;
 
-const int YAW0     	= 14;
-const int YAW1     	= 15;
-const int YAW2     	= 16;
-const int YAW3     	= 17;
+const int YAW0       = 14;
+const int YAW1       = 15;
+const int YAW2       = 16;
+const int YAW3       = 17;
 
-const int SUM1       = 18;
-const int SUM2       = 19;
+const int SUM0       = 18;
+const int SUM1       = 19;
 
 CRC16 crc(0x8005, 0xFFFF, 0x0, true, true); //init crc Algo = MODBUS
 
@@ -90,7 +90,7 @@ void loop()
     	Serial.println("Pass!");
     	ShowData(data);    
   	}
-	else if(((uint16_t)data[SUM1] << 8) | data[SUM2] != 0)
+	else if(((uint16_t)data[SUM0] << 8) | data[SUM1] != 0)
 	{
     	CLEAR_SERIAL
     	Serial.println("Error!");
@@ -127,7 +127,7 @@ uint16_t	CrcCalc(uint8_t data[], bool update)
 bool CrcCheck(uint8_t data[])
 {
 	uint16_t temp = CrcCalc(data);
-	uint16_t checksum = ((uint16_t)data[SUM1] << 8) | data[SUM2];
+	uint16_t checksum = ((uint16_t)data[SUM0] << 8) | data[SUM1];
 
   	if(temp == checksum)
   	{
