@@ -54,13 +54,11 @@ void setup()
 void loop()
 {
    uint8_t data[DATA_SIZE];
-
+   uint8_t conv[SIZE_FLOAT];
    U_float alt;
 
    alt.v = 1247.4785;
-
-   uint8_t conv[SIZE_FLOAT];
-
+  
    data[SYNC_BIT] = SYNC;
    data[SIZE] = sizeof(data);
 
