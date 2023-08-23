@@ -21,14 +21,14 @@ Adafruit_BMP085 bmp;
 
 MPU6050 mpu;
 float timeStep = 0.01; //step pour calcul du gyroscope
-float pitch = 0;
-float roll = 0;
-float yaw = 0;
+U_float pitch = 0;
+U_float roll = 0;
+U_float yaw = 0;
 
 
 //definition des pins:
-int InputFix = 23;  //pin pour déterminer s'il y a un fix sur le gps
-int LedFix = A4;
+const int InputFix = 23;  //pin pour déterminer s'il y a un fix sur le gps
+const int LedFix = A4;
 
 unsigned long previousMillis = 0;
 const long intervalBlink = 1000;
@@ -57,22 +57,22 @@ const int PITCH3     = 9;
 const int ROLL0      = 10;
 const int ROLL1      = 11;
 const int ROLL2      = 12;
-const int ROLL3    	 = 13;
+const int ROLL3      = 13;
 
-const int YAW0     	 = 14;
+const int YAW0       = 14;
 const int YAW1       = 15;
-const int YAW2     	 = 16;
-const int YAW3     	 = 17;
+const int YAW2       = 16;
+const int YAW3       = 17;
 
-const int LAT0     = 18;
-const int LAT1     = 19;
-const int LAT2     = 20;
-const int LAT3     = 21;
+const int LAT0       = 18;
+const int LAT1       = 19;
+const int LAT2       = 20;
+const int LAT3       = 21;
 
-const int LON0     = 22;
-const int LON1     = 23;
-const int LON2     = 24;
-const int LON3     = 25;
+const int LON0       = 22;
+const int LON1       = 23;
+const int LON2       = 24;
+const int LON3       = 25;
 
 const int SUM0       = 26;
 const int SUM1       = 27;
@@ -87,10 +87,8 @@ void     UpdateArray(uint8_t conv[], uint8_t address[]);
 
 void setup() 
 {
-pinMode(A4, OUTPUT);
-pinMode(InputFix, INPUT);
-
-
+   pinMode(LedFix, OUTPUT);
+   pinMode(InputFix, INPUT);
 
    Serial2.begin(9600);
    Serial3.begin(57600);
@@ -100,14 +98,23 @@ void loop()
 {
    uint8_t data[DATA_SIZE];
    uint8_t conv[SIZE_FLOAT];
-   U_float alt, lat, lon, roll, pitch, yaw;
+   U_float alt, lat, lon;
 
 
-
-    while (Serial2.available() > 0)
-    gps.encode(Serial2.read());
+   if (Serial2.available() > 0)
+   {
+      gps.encode(Serial2.read());
+   }
+    
 //GPS
-    //Implementer une condition d'avoir un FIX pour le launch + indicateur LED
+   if(digitalRead(InputFix) == true)
+   {
+      digitalWrite(LedFix, HIGH);
+   }
+   else
+   {
+      digitalWrite(LedFix, LOW);
+   }
   
    lat.v = gps.location.lat();
    lon.v = gps.location.lng();
@@ -117,18 +124,16 @@ void loop()
    alt.v = bmp.readAltitude();
 
 //gyroscope 
-//Selon le code de Sherrif mais ne fonctionne pas
-/*
-  norm = mpu.readNormalizeGyro();
-  normAccel = mpu.readNormalizeAccel();
 
-  // Calculate Pitch, Roll and Yaw
+   norm = mpu.readNormalizeGyro();
+   normAccel = mpu.readNormalizeAccel();
 
-  pitch.v = pitch + norm.YAxis * timeStep;
-  roll.v = roll + norm.XAxis * timeStep;
-  yaw.v = yaw + norm.ZAxis * timeStep;
+// Calculate Pitch, Roll and Yaw
 
-  */
+   pitch.v = pitch.v + norm.YAxis * timeStep;
+   roll.v = roll.v + norm.XAxis * timeStep;
+   yaw.v = yaw.v + norm.ZAxis * timeStep;
+
    data[SYNC_BIT] = SYNC;
    data[SIZE] = sizeof(data);
 
@@ -161,24 +166,26 @@ void loop()
     Serial.println(' ');
 	}
    */
+
   //Code pour creer des delais sans la fonction delay...
-  unsigned long currentMillis = millis();
-//delay LED d'indication 
-  if (currentMillis - previousMillis >= intervalBlink){
-    previousMillis = currentMillis;
-    if (LedFix == LOW){LedFix = HIGH;}
-    else {LedFix = LOW;}
-//delay communicaton
-unsigned long currentMillisComm = millis();
-  if (currentMillisComm - previousMillisComm >= intervalComm){
-
-    previousMillisComm = currentMillisComm;
-
-    CrcCalc(data);
-
-   SendPacket(data);
-  }
-  }
+  //delay LED d'indication 
+   unsigned long currentMillis = millis();
+   if (currentMillis - previousMillis >= intervalBlink)
+   {
+      previousMillis = currentMillis;
+      if (LedFix == LOW){LedFix = HIGH;}
+      else {LedFix = LOW;}
+     
+   }
+   
+   //delay communicaton
+   unsigned long currentMillisComm = millis();
+   if (currentMillisComm - previousMillisComm >= intervalComm)
+   {
+      previousMillisComm = currentMillisComm;
+      CrcCalc(data);
+      SendPacket(data);
+   }
 }
 
 //Crc16 calculation.
@@ -202,8 +209,6 @@ void CrcCalc(uint8_t data[])
 bool SendPacket(uint8_t data[])
 {
    Serial3.write(data, data[SIZE]);
-   //Serial3.write();
-   //Serial.print('d');
    return true;
 }
 
