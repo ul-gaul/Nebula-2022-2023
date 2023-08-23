@@ -13,7 +13,7 @@ union U_float
 const int SYNC = 0xFF;
 const int DATA_SIZE = 28; //Packet structure size;
 const int SIZE_FLOAT = sizeof(float); //4
-const uint16_t period = 5000; // 1/2 seconde
+const uint16_t period = 500; // 1/2 seconde
 
 //Packet structure
 const int SYNC_BIT   = 0;
