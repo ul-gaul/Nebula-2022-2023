@@ -66,8 +66,8 @@ void			ShowData(uint8_t data[]);
 
 void setup()
 {
-  Serial.begin(57600);	//RX PIN 0 TX PIN 1
-  Serial3.begin(57600); //RX PIN 15 TX PIN 14
+  Serial.begin(57600);	//RX0 PIN 0 TX0 PIN 1
+  Serial3.begin(57600); //RX3 PIN 15 TX3 PIN 14
 }
 
 void loop()
