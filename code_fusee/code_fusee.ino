@@ -19,11 +19,11 @@ union U_float
 // definition des capteurs:
 Adafruit_BMP085 bmp;
 
-MPU6050 mpu;
-float timeStep = 0.01; //step pour calcul du gyroscope
-U_float pitch = 0;
-U_float roll = 0;
-U_float yaw = 0;
+//MPU6050 mpu;
+//float timeStep = 0.01; //step pour calcul du gyroscope
+//U_float pitch = 0;
+//U_float roll = 0;
+//U_float yaw = 0;
 
 
 //definition des pins:
@@ -90,15 +90,15 @@ void setup()
    pinMode(LedFix, OUTPUT);
    pinMode(InputFix, INPUT);
 
-   Serial2.begin(9600);
-   Serial3.begin(57600);
+   Serial2.begin(9600);	//RX2 PIN 17 TX2 PIN 16 ----- GPS
+   Serial.begin(57600); //RX0 PIN 0 TX0 PIN 1 ----- RXD900
 }
 
 void loop()
 {
    uint8_t data[DATA_SIZE];
    uint8_t conv[SIZE_FLOAT];
-   U_float alt, lat, lon;
+   U_float alt, lat, lon, pitch, roll, yaw;
 
 
    if (Serial2.available() > 0)
@@ -125,14 +125,14 @@ void loop()
 
 //gyroscope 
 
-   norm = mpu.readNormalizeGyro();
-   normAccel = mpu.readNormalizeAccel();
+   //norm = mpu.readNormalizeGyro();
+   //normAccel = mpu.readNormalizeAccel();
 
 // Calculate Pitch, Roll and Yaw
 
-   pitch.v = pitch.v + norm.YAxis * timeStep;
-   roll.v = roll.v + norm.XAxis * timeStep;
-   yaw.v = yaw.v + norm.ZAxis * timeStep;
+   //pitch.v = pitch.v + norm.YAxis * timeStep;
+   //roll.v = roll.v + norm.XAxis * timeStep;
+   //yaw.v = yaw.v + norm.ZAxis * timeStep;
 
    data[SYNC_BIT] = SYNC;
    data[SIZE] = sizeof(data);
@@ -140,34 +140,24 @@ void loop()
    FloatToArray(alt, &conv[0]);       //Put the float value in the conv array
    UpdateArray(conv, &data[ALT0]);     //Put the value of conv in the packet at the address designed
 
-   FloatToArray(roll, &conv[0]);       //Put the float value in the conv array
-   UpdateArray(conv, &data[ROLL0]);     //Put the value of conv in the packet at the address designed
+   FloatToArray(roll, &conv[0]);
+   UpdateArray(conv, &data[ROLL0]);
 
-   FloatToArray(pitch, &conv[0]);       //Put the float value in the conv array
-   UpdateArray(conv, &data[PITCH0]);     //Put the value of conv in the packet at the address designed
+   FloatToArray(pitch, &conv[0]); 
+   UpdateArray(conv, &data[PITCH0]);    
 
-   FloatToArray(yaw, &conv[0]);       //Put the float value in the conv array
-   UpdateArray(conv, &data[YAW0]);     //Put the value of conv in the packet at the address designed
+   FloatToArray(yaw, &conv[0]);       
+   UpdateArray(conv, &data[YAW0]);    
 
 
-   FloatToArray(lat, &conv[0]);       //Put the float value in the conv array
+   FloatToArray(lat, &conv[0]);       
    UpdateArray(conv, &data[LAT0]);
 
-   FloatToArray(lon, &conv[0]);       //Put the float value in the conv array
+   FloatToArray(lon, &conv[0]);       
    UpdateArray(conv, &data[LON0]);
 
 
-   //Pour tests
-   
-
-	/*for (uint8_t i = 0; i < data[SIZE]; i++)
-	{
-		Serial.print(data[i], HEX);
-    Serial.println(' ');
-	}
-   */
-
-  //Code pour creer des delais sans la fonction delay...
+  //Code pour creer des delais sans la fonction delay... -------------------------- A VOIR SI LES DELAYS FONCTIONNE BIEN. LA LED SUR LA PIN A4 FLASH TU ?
   //delay LED d'indication 
    unsigned long currentMillis = millis();
    if (currentMillis - previousMillis >= intervalBlink)
@@ -175,10 +165,10 @@ void loop()
       previousMillis = currentMillis;
       if (LedFix == LOW){LedFix = HIGH;}
       else {LedFix = LOW;}
-     
    }
    
-   //delay communicaton
+
+   //delay communicaton ------------------------------------------------------------SI LES DELAYS FONCTIONNE PAS ON SEND PAS LE PACKET ICI
    unsigned long currentMillisComm = millis();
    if (currentMillisComm - previousMillisComm >= intervalComm)
    {
@@ -208,7 +198,7 @@ void CrcCalc(uint8_t data[])
 
 bool SendPacket(uint8_t data[])
 {
-   Serial3.write(data, data[SIZE]);
+   Serial.write(data, data[SIZE]);
    return true;
 }
 
