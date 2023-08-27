@@ -49,8 +49,8 @@ const int LON1     = 23;
 const int LON2     = 24;
 const int LON3     = 25;
 
-const int SUM0       = 26;
-const int SUM1       = 27;
+const int SUM0     = 26;
+const int SUM1     = 27;
 
 
 CRC16 crc(0x8005, 0xFFFF, 0x0, true, true); //init crc Algo = MODBUS
@@ -66,8 +66,8 @@ void			ShowData(uint8_t data[]);
 
 void setup()
 {
-  Serial.begin(57600);
-  Serial3.begin(57600);
+  Serial.begin(57600);	//RX PIN 0 TX PIN 1
+  Serial3.begin(57600); //RX PIN 15 TX PIN 14
 }
 
 void loop()
@@ -92,7 +92,7 @@ void loop()
 		for (uint8_t i = 2; i < data[SIZE]; i++)
 		{
 			data[i] = Serial3.read();
-      //Serial.println(data[i], HEX);
+      		Serial.println(data[i], HEX); // ----------------TEST----------------- A COMMENTER SI TOUT VA BIEN 
 		}
 	}
 
@@ -104,13 +104,10 @@ void loop()
 	else if(((uint16_t)data[SUM0] << 8) | data[SUM1] != 0)
 	{
     	Serial.println("Error!");
-    //	ShowData(data);
+    	ShowData(data); // ----------------TEST----------------- A COMMENTER SI TOUT VA BIEN 
   	}
   
-
   	delay(10);
-
-
 }
 
 //Crc16 calculation.
@@ -130,7 +127,7 @@ uint16_t	CrcCalc(uint8_t data[], bool update)
 	if(update)
 	{
 		data[data[SIZE]-1]=sum & 0xff;
-   	data[data[SIZE]-2]=(sum >> 8);
+   		data[data[SIZE]-2]=(sum >> 8);
 	}
    
 	return sum;
@@ -151,13 +148,8 @@ bool CrcCheck(uint8_t data[])
 
 void ShowData(uint8_t data[])
 {
-  U_float lat;
 	for (uint8_t i = 0; i < data[SIZE]; i++)
 	{
-    	//Serial.print(data[i], HEX);
-	}
-	for (int x = 0; x < 4 ; x++)
-    {lat.b[x] = data[LAT0 + x];}
-    Serial.println(lat.v);
-	
+    	Serial.print(data[i], HEX);
+	}	
 }
