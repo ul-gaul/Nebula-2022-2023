@@ -86,7 +86,7 @@ void loop()
 		while(Serial3.read() != SYNC)
 		{
 			currentMillis = millis();
-			if(currentMillis - startMillis >= period){break;}
+			//if(currentMillis - startMillis >= period){Serial.println("TIME OUT!"); break;} // -- POUR TEST JAI ENLEVER LE TIMEOUT PROTECTION ----------- A COMMENTER SI TOUT VA BIEN 
 		}
 		Serial3.read();
 		for (uint8_t i = 2; i < data[SIZE]; i++)
@@ -98,12 +98,12 @@ void loop()
 
   	if(CrcCheck(data))
   	{
-    	Serial.println("Pass!");
+    	Serial.println("Pass! ");
     	ShowData(data);    
   	}
 	else if(((uint16_t)data[SUM0] << 8) | data[SUM1] != 0)
 	{
-    	Serial.println("Error!");
+    	Serial.println("Error! "); // ----------------TEST----------------- A COMMENTER SI TOUT VA BIEN 
     	ShowData(data); // ----------------TEST----------------- A COMMENTER SI TOUT VA BIEN 
   	}
   
